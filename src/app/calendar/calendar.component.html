@@ -1,0 +1,116 @@
+<div class="max-w-7xl w-full mx-auto mt-20">
+  <div class="flex gap-5">
+    <mat-calendar
+      class="lg:w-1/2 border-2 border-gray-300 max-h-[700px]"
+      [selected]="selectedRangeValue"
+      [comparisonStart]="selectedRangeValue.start"
+      [comparisonEnd]="selectedRangeValue.end"
+      (selectedChange)="onSelectedChange($event)"
+    >
+    </mat-calendar>
+    <div class="w-1/2">
+      <div class="grid grid-cols-5 gap-2.5 mb-5">
+        <button
+          *ngFor="let item of slots"
+          class="bg-black text-lg text-white col-span-1 py-1.5 rounded-full"
+          [ngClass]="{ 'bg-purple-800': isSelected(item.id) }"
+          [disabled]="isDisabled(item.id)"
+          (click)="select(item)"
+        >
+          {{ item.label }}
+        </button>
+      </div>
+      <form [formGroup]="timeForm" class="" (ngSubmit)="addTimeSlot()">
+        <div class="">
+          <label for="first-name" class="text-[#3f51b5] text-lg mb-2"
+            >First Name</label
+          >
+          <input
+            type="text"
+            id="first-name"
+            class="w-full border border-[#3f51b5] rounded-md text-lg p-1"
+            formControlName="firstname"
+            required
+          />
+        </div>
+        <div class="col-span-5 grid grid-cols-1">
+          <label for="last-name" class="text-[#3f51b5] text-lg mb-2"
+            >Last Name</label
+          >
+          <input
+            type="text"
+            id="last-name"
+            class="w-full border border-[#3f51b5] rounded-md text-lg p-1"
+            formControlName="lastname"
+            required
+          />
+        </div>
+        <div class="col-span-5 grid grid-cols-1">
+          <label for="description" class="text-[#3f51b5] text-lg mb-2"
+            >Description</label
+          >
+          <textarea
+            type="text"
+            id="description"
+            rows="3"
+            formControlName="description"
+            class="w-full border border-[#3f51b5] rounded-md text-lg p-1"
+          ></textarea>
+        </div>
+        <p
+          class="text-lg my-5"
+          *ngIf="selectedRangeValue.start && selectedRangeValue.end"
+        ></p>
+
+        <button
+          class="border border-[#3f51b5] text-white rounded-md bg-[#3f51b5] text-lg px-10 py-1.5 block mx-auto my-10"
+          type="submit"
+          [disabled]="
+            (!selectedRangeValue.start && !selectedRangeValue.end) ||
+            selectedSlots.length < 1 ||
+            timeForm.invalid
+          "
+        >
+          Add TimeSlot
+        </button>
+      </form>
+      <div
+        class="grid grid-cols-12 rounded-lg shadow-md p-2.5 gap-y-2"
+        *ngFor="let slot of slotsFromApi"
+      >
+        <div class="col-span-6">
+          <h1 class="text-xl">{{ slot.firstname }} {{ slot.lastname }}</h1>
+          <p class="text-base">{{ slot.description }}</p>
+        </div>
+        <div class="col-span-6 flex gap-x-2">
+          <button
+            *ngFor="let time of slot.slots"
+            class="bg-black text-sm text-white py-1.5 px-[15px] rounded-full"
+          >
+            {{ time.label }}
+          </button>
+        </div>
+        <div class="col-span-6">
+          <p class="text-base">
+            From {{ formatDate(slot.dateRangeStart) }} - To
+            {{ formatDate(slot.dateRangeEnd) }}
+          </p>
+        </div>
+        <div class="col-span-6 flex gap-2.5 justify-center">
+          <button
+            class="w-full bg-red-600 text-white rounded-md py-1.5"
+            (click)="deleteSlot(slot._id)"
+          >
+            Delete
+          </button>
+          <button
+            class="w-full bg-cyan-500 text-white rounded-md py-1.5"
+            (click)="editTimeslot(slot)"
+          >
+            Edit
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
